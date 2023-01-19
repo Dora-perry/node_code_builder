@@ -809,7 +809,7 @@ async function nextQuestion(goBack, goBackFromResponse, fromDependedOn) {
             // closeResponseTimeout = setTimeout(async () => {
             //   closeResponse();
             // }, closeResponseTimeoutCounter);
-            setTimeout(function () {
+            setTimeout(async()=> {
               closeResponse();
               nextQuestion();
             }, closeResponseTimeoutCounter);
@@ -1218,8 +1218,19 @@ async function askQuestion(totalQuizQuestions, counter, fromBack) {
           <div class="selectionOptions">
             <button data-val="${val.answer}" data-id="${val.id}" class="selectionBtns selectionBtn" >${val.answer}</button>
           </div>
-        `);
+        `).trigger('click', (e) => {
+          e.preventDefault()
+            val.answer
+          // checkallegie function call
+          checkAllergie()
+        });
       }
+
+    });
+    $('#typeSelection .answerInner').append(`<div class="selectionOptions">
+     <button data-value="none-of-the-above">None of the above<button/>
+    `).trigger('click', () => {
+       handleNoneOfTheAbove()
     });
 
     if (alreadyAnswered && alreadyAnswered.answer) {
@@ -1806,4 +1817,46 @@ function handleNoneOfTheAbove() {
 
 function handleImageMissing(self) {
   $(self).addClass("image-missing");
+}
+
+function handleNoneOfTheAbove() {
+  // this handles none of the above.
+}
+
+function checkAllergie() {
+  // find the button that generated the click
+  const button = document.querySelector("[data-val]");
+  // get the value of the button
+  const val = button.getAttribute("data-val");
+  // check if the value is one of the allergens
+  if (["Banana", "Olive", "Sunflowers"].includes(val)) {
+    // terminate the quiz
+    terminateQuiz();
+  }
+}
+
+
+function terminateQuiz() {
+  // get the termination message and counter from the configuration table
+  fetch('/api/config/termination')
+    .then(response => response.json())
+    .then(config => {
+      // create the termination screen
+      const screen = document.createElement("div");
+      screen.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5);";
+      screen.innerHTML = `<p>${config.message}</p><p>Redirecting in <span id="counter">${config.counter}</span> seconds</p>`;
+      document.body.appendChild(screen);
+      // update the counter every second
+      const counter = document.querySelector("#counter");
+      let count = config.counter;
+      const interval = setInterval(() => {
+        count--;
+        counter.textContent = count;
+        if (count === 0) {
+          // redirect to the home page
+          clearInterval(interval);
+          window.location.href = "/";
+        }
+      }, 1000);
+    });
 }
