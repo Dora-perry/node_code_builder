@@ -809,7 +809,7 @@ async function nextQuestion(goBack, goBackFromResponse, fromDependedOn) {
             // closeResponseTimeout = setTimeout(async () => {
             //   closeResponse();
             // }, closeResponseTimeoutCounter);
-            setTimeout(async()=> {
+            setTimeout(()=> {
               closeResponse();
               nextQuestion();
             }, closeResponseTimeoutCounter);

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /*Powered By: Manaknightdigital Inc. https://manaknightdigital.com/ Year: 2020*/
 /**
  * Lambda
@@ -8,8 +8,8 @@
  * @author Ryan Wong
  *
  */
-const awsServerlessExpress = require("aws-serverless-express");
-const app = require("./app");
+const awsServerlessExpress = require('aws-serverless-express');
+const app = require('./app');
 const server = awsServerlessExpress.createServer(app);
 exports.handler = (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
